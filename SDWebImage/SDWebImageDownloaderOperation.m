@@ -11,6 +11,7 @@
 #import "UIImage+MultiFormat.h"
 #import <ImageIO/ImageIO.h>
 #import "SDWebImageManager.h"
+#import "FeedsStore.h" 
 
 @interface SDWebImageDownloaderOperation () <NSURLConnectionDataDelegate>
 
@@ -215,6 +216,23 @@
             [self cancelInternal];
         } else {
             [self.connection cancel];
+            
+            // WodeModify
+            if (response)
+            {
+                NSHTTPURLResponse *re=(NSHTTPURLResponse *)response;
+                NSDictionary *allHeader=[re allHeaderFields];
+                NSMutableDictionary *d = [[NSMutableDictionary alloc] init];
+                NSString *html = [NSString stringWithFormat:@"Error Message: %@",re];
+                d[@"text"] = [NSString stringWithFormat:@"%@", [html stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                d[@"url"] = re.URL.absoluteString;
+                d[@"method"] = @"GET";
+                d[@"statusCode"] =[NSString stringWithFormat:@"%ld",(long)re.statusCode];
+                d[@"requestId"]= [NSString stringWithFormat:@"%@",allHeader[@"X-Request-Id"]];
+                [[FeedsStore sharedStore] PostErrorLog:d];
+            }
+            
+            
         }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:SDWebImageDownloadStopNotification object:nil];

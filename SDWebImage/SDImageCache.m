@@ -11,7 +11,10 @@
 #import "UIImage+MultiFormat.h"
 #import <CommonCrypto/CommonDigest.h>
 
-static const NSInteger kDefaultCacheMaxCacheAge = 60 * 60 * 24 * 7; // 1 week
+#import "CommonHelper.h"
+
+// WoDeModify
+static const NSInteger kDefaultCacheMaxCacheAge =8 * 60 * 60 * 24 * 7; // 1 week *8
 // PNG signature bytes and data (below)
 static unsigned char kPNGSignatureBytes[8] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
 static NSData *kPNGSignatureData = nil;
@@ -71,9 +74,15 @@ BOOL ImageDataHasPNGPreffix(NSData *data) {
         _memCache = [[NSCache alloc] init];
         _memCache.name = fullNamespace;
 
-        // Init the disk cache
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        _diskCachePath = [paths[0] stringByAppendingPathComponent:fullNamespace];
+//        // Init the disk cache
+//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+//        _diskCachePath = [paths[0] stringByAppendingPathComponent:fullNamespace];
+        
+        // WoDeModify
+        NSString *docPath = [[CommonHelper sharedHelper] documentPathWithSubDirectoryName:@"imageCache"];
+        _diskCachePath = [docPath stringByAppendingPathComponent:fullNamespace];
+        
+        
 
         dispatch_sync(_ioQueue, ^{
             _fileManager = [NSFileManager new];

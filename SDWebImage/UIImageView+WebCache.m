@@ -61,6 +61,18 @@ static char imageURLKey;
                     if ((options & SDWebImageDelayPlaceholder)) {
                         wself.image = placeholder;
                         [wself setNeedsLayout];
+                        
+                        // WoDeModify
+                        if (cacheType==SDImageCacheTypeNone) {
+                            CATransition *transition=[CATransition animation];
+                            transition.duration=0.25f;
+                            transition.timingFunction=[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+                            transition.type = kCATransitionFade;
+                            [wself.layer addAnimation:transition forKey:nil];
+                        }
+
+                        
+                        
                     }
                 }
                 if (completedBlock && finished) {
